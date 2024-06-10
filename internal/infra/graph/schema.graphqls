@@ -17,4 +17,5 @@ type Orders {
 
 type Mutation {
     createOrder(input: OrderInput): Order
+    listOrders: Orders
 }
