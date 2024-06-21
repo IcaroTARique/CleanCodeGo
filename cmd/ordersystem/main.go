@@ -24,16 +24,21 @@ import (
 )
 
 func main() {
-	configs, err := configs.LoadConfig(".")
+	config, err := configs.LoadConfig(".")
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := sql.Open(configs.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configs.DBUser, configs.DBPassword, configs.DBHost, configs.DBPort, configs.DBName))
+	db, err := sql.Open(config.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.DBUser, config.DBPassword, config.DBHost, config.DBPort, config.DBName))
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
 
 	rabbitMQChannel := getRabbitMQChannel()
 
@@ -44,11 +49,11 @@ func main() {
 
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
 
-	webserver := webserver.NewWebServer(configs.WebServerPort)
+	webserver := webserver.NewWebServer(config.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
 	webserver.AddHandler("/order", webOrderHandler.Create)
 	webserver.AddHandler("/AllOrders", webOrderHandler.ListAll)
-	fmt.Println("Starting web server on port", configs.WebServerPort)
+	fmt.Println("Starting web server on port", config.WebServerPort)
 	go webserver.Start()
 
 	grpcServer := grpc.NewServer()
@@ -56,8 +61,8 @@ func main() {
 	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
 	reflection.Register(grpcServer)
 
-	fmt.Println("Starting gRPC server on port", configs.GRPCServerPort)
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", configs.GRPCServerPort))
+	fmt.Println("Starting gRPC server on port", config.GRPCServerPort)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.GRPCServerPort))
 	if err != nil {
 		panic(err)
 	}
@@ -69,8 +74,8 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	fmt.Println("Starting GraphQL server on port", configs.GraphQLServerPort)
-	http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
+	fmt.Println("Starting GraphQL server on port", config.GraphQLServerPort)
+	http.ListenAndServe(":"+config.GraphQLServerPort, nil)
 }
 
 func getRabbitMQChannel() *amqp.Channel {

@@ -13,3 +13,22 @@ a partir da raiz do projeto, execute o comando abaixo para rodar o servidor Grap
 go run github.com/99desings/gqlgen generate
 ```
 
+# Aplicação
+
+## Rodando a aplicação
+Para rodar a aplicação, basta rodar o seguinte comando na raiz do projeto:
+```bash
+$ go run main.go wire_gen.go
+```
+Caso esqueça de incluir o ```wire_gen.go``` no comando, o wire não irá injetar as dependências e
+a aplicação não irá funcionar dando erro NullPointerException.
+
+## Migrations
+Para rodar para subir as migrations, execute:
+```bash
+migrate -path=sql/migrations -database "mysql://root:root@tcp(localhost:3306)/orders" -verbose up
+```
+Para desfazer a migration, execute:
+```bash
+migrate -path=sql/migrations -database "mysql://root:root@tcp(localhost:3306)/orders" -verbose down
+```
