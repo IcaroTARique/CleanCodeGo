@@ -28,7 +28,15 @@ Para rodar para subir as migrations, execute:
 ```bash
 migrate -path=sql/migrations -database "mysql://root:root@tcp(localhost:3306)/orders" -verbose up
 ```
+ou rode o comando:
+```bash
+make migrate-up
+```
 Para desfazer a migration, execute:
 ```bash
 migrate -path=sql/migrations -database "mysql://root:root@tcp(localhost:3306)/orders" -verbose down
+```
+ou rode o comando:
+```bash
+make migrate-down
 ```
