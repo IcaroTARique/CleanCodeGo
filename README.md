@@ -10,7 +10,7 @@ protoc --go_out=. --go-grpc_out=. internal/infra/grpc/protofiles/order.proto
 Certifique-se de que os paths de geração estão corretos no arquivo `gqlgen.yml` e
 a partir da raiz do projeto, execute o comando abaixo para rodar o servidor GraphQL:
 ```bash
-go run github.com/99desings/gqlgen generate
+go run github.com/99designs/gqlgen generate
 ```
 
 # Aplicação
